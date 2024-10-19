@@ -51,12 +51,10 @@ pid=$!
 echo "Heart rate monitor started with PID: $pid"
 
 
-# Task 1 B: Heart Rate Monitoring and Analysis Script
+# Task 1 B: Heart Rate Monitoring Script
 
 # First, we check if the log file 'heart_rate_log.txt' exists.
-
 # If it's not found, we display an error message and exit the script.
-
 log_file="heart_rate_log.txt"
 if [[ ! -f "$log_file" ]]; then
   echo "Log file not found: $log_file"
@@ -64,46 +62,41 @@ if [[ ! -f "$log_file" ]]; then
 fi
 
 # Now, we initialize some variables to calculate the total, average, max, and min heart rates:
-
 # - 'total_heart_rate' keeps track of the sum of all heart rate readings.
-
 # - 'count' stores how many readings we've processed.
-
 # - 'max_heart_rate' will store the highest heart rate we've encountered.
-
 # - 'min_heart_rate' is initially set to a very high number so that any real value will be lower.
-
 total_heart_rate=0
 count=0
 max_heart_rate=0
 min_heart_rate=1000  # Setting a high initial value to capture the real minimum heart rate.
 
 # We then read the log file line by line.
-
 # For each line, we extract the heart rate (we're assuming it's the 12th column in the file).
-
 # The heart rate is added to the 'total_heart_rate', and we increase the count of readings.
-
 while IFS= read -r line; do
   heart_rate=$(echo "$line" | awk '{print $12}')  # Extract heart rate from the log
-  total_heart_rate=$((total_heart_rate + heart_rate))  # Add heart rate to total
-  count=$((count + 1))  # Increase the count of readings
 
-# Now we check if the current heart rate is the highest we've seen so far (max).
+  # Check if heart_rate is a number before performing arithmetic
+  if [[ "$heart_rate" =~ ^[0-9]+$ ]]; then
+      total_heart_rate=$((total_heart_rate + heart_rate))  # Add heart rate to total
+      count=$((count + 1))  # Increase the count of readings
 
-# If it is, we update 'max_heart_rate'.
+      # Now we check if the current heart rate is the highest we've seen so far (max).
+      # If it is, we update 'max_heart_rate'.
+      if (( heart_rate > max_heart_rate )); then 
+          max_heart_rate=$heart_rate; 
+      fi
 
-  if (( heart_rate > max_heart_rate )); then max_heart_rate=$heart_rate; fi
-
-# Similarly, if the current heart rate is the lowest, we update 'min_heart_rate'.
-
-  if (( heart_rate < min_heart_rate )); then min_heart_rate=$heart_rate; fi
+      # Similarly, if the current heart rate is the lowest, we update 'min_heart_rate'.
+      if (( heart_rate < min_heart_rate )); then 
+          min_heart_rate=$heart_rate; 
+      fi
+  fi
 done < "$log_file"
 
 # After processing all the lines, we calculate the average heart rate.
-
 # If we have readings, we calculate the average using 'bc' to handle floating point division.
-
 if (( count > 0 )); then
   average_heart_rate=$(echo "scale=2; $total_heart_rate / $count" | bc)  # Calculate the average
 else
