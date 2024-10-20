@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Variables
-group_number="group12" 
+group_number="12" 
 archive_dir="archived_logs_group$group_number"
 username="fdb056dd42a9" 
 host="fdb056dd42a9.6b7419f6.alu-cod.online" 
