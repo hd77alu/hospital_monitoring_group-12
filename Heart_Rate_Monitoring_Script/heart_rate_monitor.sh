@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Prompt for device name
 read -p "Enter device name (e.g., Monitor_A): " DEVICE_NAME
